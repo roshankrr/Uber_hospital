@@ -6,22 +6,26 @@ export function GDAProfiles() {
     {
       name: "Leslie Thompson",
       role: "Senior GDA",
-      image: "/placeholder.svg?height=100&width=100",
+      image:
+        "https://i.pinimg.com/474x/b4/3a/89/b43a892e3f68c50a5b7ce996aa41a1af.jpg",
     },
     {
       name: "Harry Wilson",
       role: "Emergency GDA",
-      image: "/placeholder.svg?height=100&width=100",
+      image:
+        "https://i.pinimg.com/474x/97/39/5e/97395e774f335d862cef7fc0e9b22956.jpg",
     },
     {
       name: "Leo Martinez",
       role: "ICU GDA",
-      image: "/placeholder.svg?height=100&width=100",
+      image:
+        "https://i.pinimg.com/474x/5c/2c/71/5c2c71a48d6d1a166c529c2c9d2c7348.jpg",
     },
     {
       name: "Jenny Parker",
       role: "General GDA",
-      image: "/placeholder.svg?height=100&width=100",
+      image:
+        "https://i.pinimg.com/474x/82/19/e9/8219e955fd50a0eb26959d17f4b173c7.jpg",
     },
   ];
 

@@ -20,10 +20,11 @@ interface GdaDetails {
 }
 
 const gdaData: GdaDetails = {
-  name: "John Doe",
-  photo: "/images/gda-photo.jpg",
+  name: "Roshan KUumar",
+  photo:
+    "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18yc0RZQ3ZvQkRaNG03QjFqSHNTTHRsYlJSd1AifQ?width=160",
   time: "9:00 AM - 5:00 PM",
-  contact: "+1 234 567 890",
+  contact: "9874652821",
 };
 
 export default function PatientGdaView() {

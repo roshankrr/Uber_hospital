@@ -5,9 +5,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 export function ConsultationSlots() {
   const slots = [
     {
-      gda: "Devon Lane",
+      gda: "Roshan",
       department: "Emergency Ward",
-      time: "10:30 AM - 11:30 AM",
+      time: "10-15min",
       image: "/placeholder.svg",
     },
     {

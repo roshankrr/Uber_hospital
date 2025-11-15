@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 
 const patientSchema = new mongoose.Schema(
   {
+    clerkId: {
+      type: String,
+      required: false, // Optional to support anonymous patients
+    },
     name: {
       type: String,
       required: true,

@@ -23,6 +23,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { createPatientRequest } from "@/actions";
 import { Toaster } from "@/components/ui/toaster";
+import { useAuth } from "@clerk/nextjs";
 
 const commonIllnesses = [
   "Common Cold",
@@ -45,6 +46,7 @@ export default function Patient_view() {
   const [age, setAge] = useState("");
   const [notes, setNotes] = useState("");
   const { toast } = useToast();
+  const { userId } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -126,6 +128,7 @@ export default function Patient_view() {
     }
 
     const formData = {
+      clerkId: userId || undefined,
       name: name.trim(),
       illness: illness === "Other" ? otherIllness.trim() : illness,
       arrivalTime,

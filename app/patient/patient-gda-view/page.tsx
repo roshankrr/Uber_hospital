@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,27 +9,82 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { UserButton, SignInButton, SignUpButton, useAuth } from "@clerk/nextjs";
-import { Hospital, Search } from "lucide-react";
+import { Hospital, Search, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
+import { getPatientByClerkId, getAssignedGDAForPatient } from "@/actions";
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 
 interface GdaDetails {
+  _id: string;
   name: string;
-  photo: string;
-  time: string;
+  imageUrl?: string;
+  shift: string;
   contact: string;
+  email: string;
+  department: string;
 }
-
-const gdaData: GdaDetails = {
-  name: "Roshan KUumar",
-  photo:
-    "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18yc0RZQ3ZvQkRaNG03QjFqSHNTTHRsYlJSd1AifQ?width=160",
-  time: "9:00 AM - 5:00 PM",
-  contact: "9874652821",
-};
 
 export default function PatientGdaView() {
   const { userId } = useAuth();
+  const { toast } = useToast();
+  const [gdaData, setGdaData] = useState<GdaDetails | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchGDADetails() {
+      if (!userId) {
+        setError("Please sign in to view your assigned GDA");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        // Get patient record using clerkId
+        const patientResponse = await getPatientByClerkId(userId);
+
+        if (!patientResponse.success || !patientResponse.data) {
+          setError("No patient request found. Please submit a request first.");
+          setLoading(false);
+          return;
+        }
+
+        const patient = patientResponse.data;
+
+        // Check if patient has an assigned GDA
+        if (!patient.assignedGDA) {
+          setError(
+            "No GDA has been assigned yet. Please wait for a GDA to accept your request."
+          );
+          setLoading(false);
+          return;
+        }
+
+        // Fetch GDA details using patient ID
+        const gdaResponse = await getAssignedGDAForPatient(patient._id);
+
+        if (gdaResponse.success && gdaResponse.data) {
+          setGdaData(gdaResponse.data);
+        } else {
+          setError("Failed to fetch GDA details");
+        }
+      } catch (err) {
+        console.error("Error fetching GDA details:", err);
+        setError("An error occurred while fetching GDA details");
+        toast({
+          title: "Error",
+          description: "Failed to load GDA information",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchGDADetails();
+  }, [userId, toast]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800">
@@ -86,25 +142,63 @@ export default function PatientGdaView() {
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col items-center space-y-4">
-              <img
-                src={gdaData.photo}
-                alt={gdaData.name}
-                className="h-32 w-32 rounded-full object-cover shadow-lg"
-              />
-              <h2 className="text-xl font-bold text-primary">{gdaData.name}</h2>
-              <p className="text-muted-foreground">
-                Shift Timing: {gdaData.time}
-              </p>
-              <p className="text-muted-foreground">
-                Contact: {gdaData.contact}
-              </p>
-              <Button className="mt-4 hover:scale-105 transition-transform">
-                Contact GDA
-              </Button>
+              {loading ? (
+                <div className="flex flex-col items-center justify-center py-8">
+                  <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                  <p className="mt-4 text-muted-foreground">
+                    Loading GDA details...
+                  </p>
+                </div>
+              ) : error ? (
+                <div className="text-center py-8">
+                  <p className="text-destructive font-medium">{error}</p>
+                  <Link href="/patient">
+                    <Button className="mt-4" variant="outline">
+                      Go to Patient Dashboard
+                    </Button>
+                  </Link>
+                </div>
+              ) : gdaData ? (
+                <>
+                  {gdaData.imageUrl && (
+                    <img
+                      src={gdaData.imageUrl}
+                      alt={gdaData.name}
+                      className="h-32 w-32 rounded-full object-cover shadow-lg"
+                    />
+                  )}
+                  {!gdaData.imageUrl && (
+                    <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center shadow-lg">
+                      <span className="text-4xl font-bold text-primary">
+                        {gdaData.name.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                  )}
+                  <h2 className="text-xl font-bold text-primary">
+                    {gdaData.name}
+                  </h2>
+                  <p className="text-muted-foreground">
+                    Department: {gdaData.department}
+                  </p>
+                  <p className="text-muted-foreground">
+                    Shift Timing: {gdaData.shift}
+                  </p>
+                  <p className="text-muted-foreground">
+                    Contact: {gdaData.contact}
+                  </p>
+                  <p className="text-muted-foreground">
+                    Email: {gdaData.email}
+                  </p>
+                  <Button className="mt-4 hover:scale-105 transition-transform">
+                    Contact GDA
+                  </Button>
+                </>
+              ) : null}
             </CardContent>
           </Card>
         </main>
       </div>
+      <Toaster />
     </div>
   );
 }

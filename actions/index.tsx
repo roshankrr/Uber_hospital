@@ -6,6 +6,7 @@ import GDA from "@/db/gdaModel";
 
 // Patient Actions
 export async function createPatientRequest(formData: {
+  clerkId?: string;
   name: string;
   illness: string;
   arrivalTime: string;
@@ -47,6 +48,18 @@ export async function getPatientById(patientId: string) {
     return { success: true, data: patient };
   } catch (error) {
     console.error("Error fetching patient:", error);
+    return { success: false, error: "Failed to fetch patient details" };
+  }
+}
+
+// Get patient by Clerk ID
+export async function getPatientByClerkId(clerkId: string) {
+  try {
+    await dbConnect();
+    const patient = await Patient.findOne({ clerkId }).sort({ createdAt: -1 });
+    return { success: true, data: patient };
+  } catch (error) {
+    console.error("Error fetching patient by Clerk ID:", error);
     return { success: false, error: "Failed to fetch patient details" };
   }
 }

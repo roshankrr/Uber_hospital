@@ -2,6 +2,7 @@ import './globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Inter } from 'next/font/google';
 import { Toaster } from "@/components/ui/sonner";
+import { PatientNotificationProvider } from "@/contexts/PatientNotificationContext";
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -19,8 +20,10 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className={inter.className}>
-          {children}
-          <Toaster />
+          <PatientNotificationProvider>
+            {children}
+            <Toaster />
+          </PatientNotificationProvider>
         </body>
       </html>
     </ClerkProvider>
